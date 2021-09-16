@@ -66,13 +66,9 @@ contract VCG is AuctionStorage {
         emit AuctionStarted(newId, newAuction.startAuction, _tokenToSale, _tokenIdToSale, _amountToSale);
     }
 
-    function isActive(uint256 _auctionId) public view returns(bool) {
-        return auctions[_auctionId].active;
-    }
-
     function createBid(uint256 _auctionId, bytes memory _hash) external payable {
         require(auctionsAmount >= _auctionId, "not exists");
-        require( isActive( _auctionId ), "not active");
+        require( auctions[_auctionId].active , "not active");
         uint256 value = msg.value;
         address sender = _msgSender();
         require(bidHashs[_auctionId][sender].length == 0, "bid already made");
@@ -85,13 +81,13 @@ contract VCG is AuctionStorage {
 
     function claim(uint256 _auctionId, address _token, uint256 _tokenId, uint256 _amount) external {  //TODO nonReentrancy
         require(auctionsAmount >= _auctionId, "not exists");
-        require(!isActive( _auctionId ), 'not finished');
+        require(!auctions[_auctionId].active, 'not finished');
         _transferAssets(_msgSender(), _amount, _token, _tokenId);
     }
 
     function returnDeposit(uint256 _auctionId) external {
         require(auctionsAmount >= _auctionId, "not exists");
-        require(!isActive( _auctionId ), 'not finished');
+        require(!auctions[_auctionId].active, 'not finished');
         _returnDeposit(_auctionId);
     }
 
@@ -99,7 +95,7 @@ contract VCG is AuctionStorage {
 
     function finishAuction(uint256 _auctionId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) external onlyOwner {
         require(auctionsAmount >= _auctionId, "not exists");
-        require( isActive( _auctionId ), "already finished");
+        require( auctions[_auctionId].active, "already finished");
         require(_winners.length == _prices.length && _amounts.length == _prices.length, 'incorrect data');
         _makeExchange(_auctionId, auctions[_auctionId].tokenToSale, auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
         auctions[_auctionId].active = false;        
