@@ -98,48 +98,6 @@ describe('test sale', async () => {
       expect(contractBalance).to.be.equal(AMOUNTS[0]);
    }) 
 
-   describe('deposit and withdraw', async() => {
-      it('should deposit', async() => {
-         const aliceBalanceBefore = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceBefore).to.be.equal('0');
-         const amountToDeposit = ethers.utils.parseEther('1');
-         await vcg.connect(alice).deposit({value: amountToDeposit});
-         const aliceBalanceAfter = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceAfter).to.be.equal(amountToDeposit);
-      })
-
-      it('should deposit via receive()', async() => {
-         const aliceBalanceBefore = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceBefore).to.be.equal('0');
-         const amountToDeposit = ethers.utils.parseEther('1');
-         let msg = {to: vcg.address, value: amountToDeposit}
-         const transaction = await alice.sendTransaction(msg);
-         const aliceBalanceAfter = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceAfter).to.be.equal(amountToDeposit);
-      })
-
-      it('should deposit via fallback()', async() => {
-         const aliceBalanceBefore = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceBefore).to.be.equal('0');
-         const amountToDeposit = ethers.utils.parseEther('1');
-         await vcg.connect(alice).fallback({value: amountToDeposit});
-         const aliceBalanceAfter = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceAfter).to.be.equal(amountToDeposit);
-      })
-
-      it('should deposit and then partially withdraw ', async() => {
-         const aliceBalanceBefore = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceBefore).to.be.equal('0');
-         const amountToDeposit = ethers.utils.parseEther('1');
-         await vcg.connect(alice).deposit({value: amountToDeposit});
-         await vcg.connect(alice).withdraw(amountToDeposit.div(TWO));
-         const aliceBalanceAfter = await vcg.balanceOf(alice.address);
-         expect(aliceBalanceAfter).to.be.equal(amountToDeposit.div(TWO));
-
-      })
-
-   })
-
   
 
    describe('auction started', async() => {
@@ -152,38 +110,26 @@ describe('test sale', async () => {
          await vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0]);
       })
 
-      it('shouldnt create bid if user balance is zero', async() => {
-         const coinAmount = '500';
-         const nonce = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
-         const bid = ethers.utils.parseEther('0.01');
-         const auctionId = 0;
-         const str = coinAmount.concat(nonce.toString()).concat(bid.toString()).concat(auctionId.toString());
-         const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
-         await expect(vcg.connect(alice).createBid(auctionId, bidHash)).to.be.revertedWith('user has zero balance');
-         
-      })
 
       it('shouldnt let create bid if auction doesnt exist (wrong id)', async() => {
-         await vcg.connect(alice).deposit({value: amountToDeposit});
          const coinAmount = '500';
          const nonce = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
          const bid = ethers.utils.parseEther('0.01');
          const auctionId = 1;
          const str = coinAmount.concat(nonce.toString()).concat(bid.toString()).concat(auctionId.toString());
          const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
-         await expect(vcg.connect(alice).createBid(auctionId, bidHash)).to.be.revertedWith('not exists');
+         await expect(vcg.connect(alice).createBid(auctionId, bidHash, {value: amountToDeposit})).to.be.revertedWith('not exists');
 
       })
 
       it('should create bid', async() => {
-         await vcg.connect(alice).deposit({value: amountToDeposit});
          const coinAmount = '500';
          const nonce = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
          const bid = ethers.utils.parseEther('0.01');
          const auctionId = 0;
          const str = coinAmount.concat(nonce.toString()).concat(bid.toString()).concat(auctionId.toString());
          const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
-         const tx = await vcg.connect(alice).createBid(auctionId, bidHash);
+         const tx = await vcg.connect(alice).createBid(auctionId, bidHash, {value: amountToDeposit});
          const receipt = await tx.wait();
          const hash = await vcg.getBidHash(auctionId, alice.address);
          expect(hash).to.be.equal(bidHash);
@@ -226,13 +172,10 @@ describe('test sale', async () => {
 
 
          beforeEach('several users deposit and make bids', async() => {
-            await vcg.connect(alice).deposit({value: amountAlice});
-            await vcg.connect(bob).deposit({value: amountBob});
-            await vcg.connect(charlie).deposit({value: amountCharlie});
 
-            await vcg.connect(alice).createBid(0, bidHashAlice);
-            await vcg.connect(bob).createBid(0, bidHashBob);
-            await vcg.connect(charlie).createBid(0, bidHashCharlie);
+            await vcg.connect(alice).createBid(0, bidHashAlice, {value: amountAlice});
+            await vcg.connect(bob).createBid(0, bidHashBob, {value: amountBob});
+            await vcg.connect(charlie).createBid(0, bidHashCharlie, {value: amountCharlie});
             
          })
 
@@ -243,13 +186,7 @@ describe('test sale', async () => {
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
             let active = await vcg.isActive(0);
             expect(active).to.be.true;
-            const balanceAliceBefore = await vcg.balanceOf(alice.address);
-            const balanceBobBefore = await vcg.balanceOf(bob.address);
-            const balanceCharlieBefore = await vcg.balanceOf(charlie.address);
             const tx = await vcg.finishAuction(0, winners, prices, amounts);
-            const balanceAliceAfter = await vcg.balanceOf(alice.address);
-            const balanceBobAfter = await vcg.balanceOf(bob.address);
-            const balanceCharlieAfter = await vcg.balanceOf(charlie.address);
             const token = await vcg.getTokenToSale(0);
             const tokenId = await vcg.getTokenIdToSale(0);
             const assetsAlice = await vcg.getAmountOfAsset(alice.address, token, tokenId);
@@ -264,9 +201,6 @@ describe('test sale', async () => {
             active = await vcg.isActive(0);
             expect(active).to.be.false;
             const sum = price.add(price).add(price);
-            expect(balanceAliceBefore.sub(balanceAliceAfter)).to.be.equal(price);
-            expect(balanceBobBefore.sub(balanceBobAfter)).to.be.equal(price);
-            expect(balanceCharlieBefore.sub(balanceCharlieAfter)).to.be.equal(price);
    
          })
 

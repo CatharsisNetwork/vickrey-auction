@@ -12,6 +12,7 @@ contract VCG is AuctionStorage {
     
     AuctionInfo[] auctions;
 
+
     struct AuctionInfo {
         uint256 id;
         uint256 startAuction;
@@ -21,7 +22,7 @@ contract VCG is AuctionStorage {
         bool active;
     }
 
-    mapping(uint256 => mapping(address => bytes)) bids;                                 // auction id => user address => bid's hash
+    mapping(uint256 => mapping(address => bytes)) bidHashs;                                 // auction id => user address => bid's hash
 
 
     event AuctionStarted(
@@ -89,15 +90,18 @@ contract VCG is AuctionStorage {
     }
 
     function getBidHash(uint256 _auctionId, address _user) public view returns(bytes memory){
-        return bids[_auctionId][_user];
+        return bidHashs[_auctionId][_user];
     }
 
-    function createBid(uint256 _auctionId, bytes memory _hash) external {
+    function createBid(uint256 _auctionId, bytes memory _hash) external payable{
         require(auctions.length >= _auctionId + 1, "not exists");
         require( isActive( _auctionId ), "not active");
-        require(balances[_msgSender()] > 0, "user has zero balance");
-        bids[_auctionId][_msgSender()] = _hash;
-        emit NewBid(_auctionId, _msgSender(), _hash);
+        uint256 value = msg.value;
+        address sender = _msgSender();
+        require(value > 0, "not enough deposit");
+        bidHashs[_auctionId][sender] = _hash;
+        _setBidDeposit(_auctionId, sender, value);
+        emit NewBid(_auctionId, sender, _hash);
     }
 
     function claim(uint256 _auctionId, address _token, uint256 _tokenId, uint256 _amount) external {  //TODO nonReentrancy
@@ -106,13 +110,15 @@ contract VCG is AuctionStorage {
         _transferAssets(_msgSender(), _amount, _token, _tokenId);
     }
 
+    function returnDeposit(uint256 _auctionId) external {}
+
     //function claimBatch
 
     function finishAuction(uint256 _auctionId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) external onlyOwner {
         require(auctions.length >= _auctionId + 1, "not exists");
         require( isActive( _auctionId ), "already finished");
         require(_winners.length == _prices.length && _amounts.length == _prices.length, 'incorrect data');
-        _makeExchange(auctions[_auctionId].tokenToSale, auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
+        _makeExchange(_auctionId, auctions[_auctionId].tokenToSale, auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
         auctions[_auctionId].active = false;        
         emit AuctionFinished(_auctionId, auctions[_auctionId].amountToSale, _winners);
     }
