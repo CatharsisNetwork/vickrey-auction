@@ -24,6 +24,14 @@ contract AuctionStorage is Ownable, ERC1155Holder {
         return success;
     }
 
+    function _returnDeposit(uint256 _auctionId) internal {
+        address sender = _msgSender();
+        uint256 deposit = deposits[_auctionId][sender];
+        require(deposit > 0, "zero deposit");
+        deposits[_auctionId][sender] = 0;
+        _transferETH(payable(sender), deposit);
+    } 
+
     function takeProfit() external onlyOwner {
         uint256 balance = profit;
         require(balance > 0, 'zero balance');

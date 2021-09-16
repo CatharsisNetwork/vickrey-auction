@@ -75,7 +75,7 @@ contract VCG is AuctionStorage {
         require( isActive( _auctionId ), "not active");
         uint256 value = msg.value;
         address sender = _msgSender();
-        require(bidHashs[_auctionId][sender].length > 0, "bid already made");
+        require(bidHashs[_auctionId][sender].length == 0, "bid already made");
         require(sender != owner(), "bidder cannot be owner");
         require(value > 0, "not enough deposit");
         bidHashs[_auctionId][sender] = _hash;
@@ -89,7 +89,11 @@ contract VCG is AuctionStorage {
         _transferAssets(_msgSender(), _amount, _token, _tokenId);
     }
 
-    function returnDeposit(uint256 _auctionId) external {}
+    function returnDeposit(uint256 _auctionId) external {
+        require(auctionsAmount >= _auctionId, "not exists");
+        require(!isActive( _auctionId ), 'not finished');
+        _returnDeposit(_auctionId);
+    }
 
     //function claimBatch
 
