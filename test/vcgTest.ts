@@ -74,10 +74,12 @@ describe('test sale', async () => {
       const timestamp = (await receipt.events[0].getBlock()).timestamp;
       const event = receipt.events[1].event;
       let auctionList = await vcg.getAuctions();
-      const tokenIdToSale = await vcg.getTokenIdToSale(0);
-      const tokenToSale = await vcg.getTokenToSale(0);
-      const amountToSale = await vcg.getAmountToSale(0);
-      const start = await vcg.getStartAuction(0);
+      const auction = await vcg.auctions(0);
+      const tokenIdToSale = auction.tokenIdToSale;
+      const tokenToSale = auction.tokenToSale;
+      const amountToSale = auction.amountToSale;
+      const start = auction.startAuction;
+      const active = auction.active;
       const contractBalance = await mock1.balanceOf(vcg.address, IDS[0]);
 
       expect(receipt.events[1].args.start).to.be.equal(timestamp);
@@ -89,12 +91,14 @@ describe('test sale', async () => {
       expect(auctionList[0].startAuction).to.be.equal(timestamp);
       expect(auctionList[0].tokenIdToSale).to.be.equal(IDS[0]);
       expect(auctionList[0].amountToSale).to.be.equal(AMOUNTS[0]);
+      expect(auctionList[0].active).to.be.true;
 
       expect(event).to.be.equal('AuctionStarted');
       expect(start).to.be.equal(timestamp);
       expect(tokenToSale).to.be.equal(TOKENS[0]);
       expect(tokenIdToSale).to.be.equal(IDS[0]);
       expect(amountToSale).to.be.equal(AMOUNTS[0]);
+      expect(active).to.be.true;
       expect(contractBalance).to.be.equal(AMOUNTS[0]);
    }) 
 
@@ -131,7 +135,7 @@ describe('test sale', async () => {
          const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
          const tx = await vcg.connect(alice).createBid(auctionId, bidHash, {value: amountToDeposit});
          const receipt = await tx.wait();
-         const hash = await vcg.getBidHash(auctionId, alice.address);
+         const hash = await vcg.bidHashs(auctionId, alice.address);
          expect(hash).to.be.equal(bidHash);
          expect(receipt.events[0].event).to.be.equal('NewBid');
          expect(receipt.events[0].args.auctionId).to.be.equal(auctionId);
@@ -187,16 +191,16 @@ describe('test sale', async () => {
             let active = await vcg.isActive(0);
             expect(active).to.be.true;
             const tx = await vcg.finishAuction(0, winners, prices, amounts);
-            const token = await vcg.getTokenToSale(0);
-            const tokenId = await vcg.getTokenIdToSale(0);
-            const assetsAlice = await vcg.getAmountOfAsset(alice.address, token, tokenId);
-            const assetsBob = await vcg.getAmountOfAsset(bob.address, token, tokenId);
-            const assetsCharlie = await vcg.getAmountOfAsset(charlie.address, token, tokenId);
+            const token = (await vcg.auctions(0)).tokenToSale;
+            const tokenId = (await vcg.auctions(0)).tokenIdToSale;
+            const assetsAlice = await vcg.assets(alice.address, token, tokenId);
+            const assetsBob = await vcg.assets(bob.address, token, tokenId);
+            const assetsCharlie = await vcg.assets(charlie.address, token, tokenId);
             expect(assetsAlice).to.be.equal(coinAmountAlice);
             expect(assetsBob).to.be.equal(coinAmountBob);
             expect(assetsCharlie).to.be.equal(coinAmountCharlie);
             const receipt = await tx.wait();
-            console.log(receipt);
+            // console.log(receipt);
             expect(receipt.events[0].event).to.be.equal('AuctionFinished');
             active = await vcg.isActive(0);
             expect(active).to.be.false;

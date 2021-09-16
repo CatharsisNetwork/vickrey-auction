@@ -10,14 +10,10 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract AuctionStorage is Ownable, ERC1155Holder {
 
+    mapping(address => mapping(address => mapping(uint256 => uint256 ))) public assets;                // user address => token address => token id => amount
+    mapping(uint256 => mapping(address => uint256)) public deposits;                                   // auction id => user address => bid's hash
+
     uint256 profit;                                                                             // how much owner can withdraw
-    mapping(address => mapping(address => mapping(uint256 => uint256 ))) assets;                // user address => token address => token id => amount
-    mapping(uint256 => mapping(address => uint256)) deposits;                                   // auction id => user address => bid's hash
-
-
-    function getAmountOfAsset(address _account, address _tokenAddress, uint256 _tokenId) view external returns(uint256) {
-        return assets[_account][_tokenAddress][_tokenId];
-    }
 
     function _setBidDeposit(uint256 _auctionId, address _to, uint256 _amount) internal {
         deposits[_auctionId][_to] = _amount;

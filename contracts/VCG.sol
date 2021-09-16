@@ -9,9 +9,8 @@ import 'hardhat/console.sol';
 // winners get their assets automatically after calling finishAuction()
 // those who didn't get reward, 
 contract VCG is AuctionStorage {
-    
-    AuctionInfo[] auctions;
 
+    mapping(uint256 => mapping(address => bytes)) public bidHashs;       // auction id => user address => bid's hash
 
     struct AuctionInfo {
         uint256 id;
@@ -22,8 +21,7 @@ contract VCG is AuctionStorage {
         bool active;
     }
 
-    mapping(uint256 => mapping(address => bytes)) bidHashs;                                 // auction id => user address => bid's hash
-
+    AuctionInfo[] public auctions;
 
     event AuctionStarted(
         uint256 id,
@@ -65,32 +63,12 @@ contract VCG is AuctionStorage {
         emit AuctionStarted(newId, newAuction.startAuction, _tokenToSale, _tokenIdToSale, _amountToSale);
     }
 
-    function getStartAuction(uint256 _auctionId) external view returns(uint256){
-        return auctions[_auctionId].startAuction;
-    }
-
-    function getTokenToSale(uint256 _auctionId) external view returns(address){
-        return auctions[_auctionId].tokenToSale;
-    }
-
-    function getTokenIdToSale(uint256 _auctionId) external view returns(uint256){
-        return auctions[_auctionId].tokenIdToSale;
-    }
-
-    function getAmountToSale(uint256 _auctionId) external view returns(uint256){
-        return auctions[_auctionId].amountToSale;
-    }
-
     function getAuctions() external view returns(AuctionInfo[] memory){
         return auctions;
     }
 
     function isActive(uint256 _auctionId) public view returns(bool){
         return auctions[_auctionId].active;
-    }
-
-    function getBidHash(uint256 _auctionId, address _user) public view returns(bytes memory){
-        return bidHashs[_auctionId][_user];
     }
 
     function createBid(uint256 _auctionId, bytes memory _hash) external payable{
