@@ -40,7 +40,8 @@ contract VCG is AuctionStorage {
     event NewBid(
         uint256 auctionId,
         address bidder,
-        bytes hash
+        bytes hash,
+        uint256 deposit
     );
 
     function initializeAuction(
@@ -64,19 +65,21 @@ contract VCG is AuctionStorage {
         emit AuctionStarted(newId, newAuction.startAuction, _tokenToSale, _tokenIdToSale, _amountToSale);
     }
 
-    function isActive(uint256 _auctionId) public view returns(bool){
+    function isActive(uint256 _auctionId) public view returns(bool) {
         return auctions[_auctionId].active;
     }
 
-    function createBid(uint256 _auctionId, bytes memory _hash) external payable{
+    function createBid(uint256 _auctionId, bytes memory _hash) external payable {
         require(auctionsAmount >= _auctionId, "not exists");
         require( isActive( _auctionId ), "not active");
         uint256 value = msg.value;
         address sender = _msgSender();
+        require(bidHashs[_auctionId][sender].length > 0, "bid already made");
+        require(sender != owner(), "bidder cannot be owner");
         require(value > 0, "not enough deposit");
         bidHashs[_auctionId][sender] = _hash;
         _setBidDeposit(_auctionId, sender, value);
-        emit NewBid(_auctionId, sender, _hash);
+        emit NewBid(_auctionId, sender, _hash, value);
     }
 
     function claim(uint256 _auctionId, address _token, uint256 _tokenId, uint256 _amount) external {  //TODO nonReentrancy
