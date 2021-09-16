@@ -34,7 +34,8 @@ contract VCG is AuctionStorage {
     event AuctionFinished(
         uint256 id,
         uint256 sold,
-        address[] winners
+        address[] winners,
+        uint256 end
     );
 
     event NewBid(
@@ -98,7 +99,7 @@ contract VCG is AuctionStorage {
         require(_winners.length == _prices.length && _amounts.length == _prices.length, 'incorrect data');
         _makeExchange(_auctionId, auctions[_auctionId].tokenToSale, auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
         auctions[_auctionId].active = false;        
-        emit AuctionFinished(_auctionId, auctions[_auctionId].amountToSale, _winners);
+        emit AuctionFinished(_auctionId, auctions[_auctionId].amountToSale, _winners, block.timestamp);
     }
 
     //TODO Only operator

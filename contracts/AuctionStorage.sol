@@ -20,7 +20,7 @@ contract AuctionStorage is Ownable, ERC1155Holder {
     }
 
     function _transferETH(address payable _receiver, uint256 _amount) internal returns(bool){
-        (bool success, ) = _receiver.call{value: _amount, gas: 4000}("");
+        (bool success, ) = _receiver.call{value: _amount, gas: 2300}("");
         return success;
     }
 
@@ -40,14 +40,14 @@ contract AuctionStorage is Ownable, ERC1155Holder {
 
     function _makeExchange(uint256 _auctionId, address _token, uint256 _tokenId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) internal {
         uint256 sumETH; 
-        uint256 leftover;
         for (uint256 i = 0; i < _winners.length; i++) {
             sumETH += _prices[i];
-            leftover = deposits[_auctionId][_winners[i]] - _prices[i];
-            _transferETH(payable(_winners[i]), leftover);
+            deposits[_auctionId][_winners[i]] -= _prices[i];
             assets[_winners[i]][_token][_tokenId] = _amounts[i];
         }
         profit += sumETH;
     }
+
+    //TODO: if there are a lot of winners?
 
 }
