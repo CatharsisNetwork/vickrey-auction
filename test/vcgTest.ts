@@ -73,8 +73,7 @@ describe('test sale', async () => {
       const receipt = await tx.wait();
       const timestamp = (await receipt.events[0].getBlock()).timestamp;
       const event = receipt.events[1].event;
-      let auctionList = await vcg.getAuctions();
-      const auction = await vcg.auctions(0);
+      const auction = await vcg.auctions(1);
       const tokenIdToSale = auction.tokenIdToSale;
       const tokenToSale = auction.tokenToSale;
       const amountToSale = auction.amountToSale;
@@ -86,12 +85,6 @@ describe('test sale', async () => {
       expect(receipt.events[1].args.tokenToSale).to.be.equal(TOKENS[0]);
       expect(receipt.events[1].args.tokenIdToSale).to.be.equal(IDS[0]);
       expect(receipt.events[1].args.amountToSale).to.be.equal(AMOUNTS[0]);
-
-      expect(auctionList[0].id).to.be.equal(0);
-      expect(auctionList[0].startAuction).to.be.equal(timestamp);
-      expect(auctionList[0].tokenIdToSale).to.be.equal(IDS[0]);
-      expect(auctionList[0].amountToSale).to.be.equal(AMOUNTS[0]);
-      expect(auctionList[0].active).to.be.true;
 
       expect(event).to.be.equal('AuctionStarted');
       expect(start).to.be.equal(timestamp);
@@ -119,7 +112,7 @@ describe('test sale', async () => {
          const coinAmount = '500';
          const nonce = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
          const bid = ethers.utils.parseEther('0.01');
-         const auctionId = 1;
+         const auctionId = 2;
          const str = coinAmount.concat(nonce.toString()).concat(bid.toString()).concat(auctionId.toString());
          const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
          await expect(vcg.connect(alice).createBid(auctionId, bidHash, {value: amountToDeposit})).to.be.revertedWith('not exists');
@@ -130,7 +123,7 @@ describe('test sale', async () => {
          const coinAmount = '500';
          const nonce = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
          const bid = ethers.utils.parseEther('0.01');
-         const auctionId = 0;
+         const auctionId = 1;
          const str = coinAmount.concat(nonce.toString()).concat(bid.toString()).concat(auctionId.toString());
          const bidHash = ethers.utils.keccak256(ethers.utils.hexlify(+str));
          const tx = await vcg.connect(alice).createBid(auctionId, bidHash, {value: amountToDeposit});
@@ -161,9 +154,9 @@ describe('test sale', async () => {
          let nonceBob = ethers.utils.keccak256(nonceAlice);
          let nonceCharlie = ethers.utils.keccak256(nonceBob);
 
-         let auctionIdAlice = 0;
-         let auctionIdBob = 1;
-         let auctionIdCharlie = 2;
+         let auctionIdAlice = 1;
+         let auctionIdBob = 2;
+         let auctionIdCharlie = 3;
 
          let strAlice = coinAmountAlice.concat(nonceAlice.toString()).concat(bidAlice.toString()).concat(auctionIdAlice.toString());
          let strBob = coinAmountBob.concat(nonceBob.toString()).concat(bidBob.toString()).concat(auctionIdBob.toString());
@@ -177,9 +170,9 @@ describe('test sale', async () => {
 
          beforeEach('several users deposit and make bids', async() => {
 
-            await vcg.connect(alice).createBid(0, bidHashAlice, {value: amountAlice});
-            await vcg.connect(bob).createBid(0, bidHashBob, {value: amountBob});
-            await vcg.connect(charlie).createBid(0, bidHashCharlie, {value: amountCharlie});
+            await vcg.connect(alice).createBid(1, bidHashAlice, {value: amountAlice});
+            await vcg.connect(bob).createBid(1, bidHashBob, {value: amountBob});
+            await vcg.connect(charlie).createBid(1, bidHashCharlie, {value: amountCharlie});
             
          })
 
@@ -188,11 +181,11 @@ describe('test sale', async () => {
             const prices = [price, price, price];
             const winners = [alice.address, bob.address, charlie.address];
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
-            let active = await vcg.isActive(0);
+            let active = await vcg.isActive(1);
             expect(active).to.be.true;
-            const tx = await vcg.finishAuction(0, winners, prices, amounts);
-            const token = (await vcg.auctions(0)).tokenToSale;
-            const tokenId = (await vcg.auctions(0)).tokenIdToSale;
+            const tx = await vcg.finishAuction(1, winners, prices, amounts);
+            const token = (await vcg.auctions(1)).tokenToSale;
+            const tokenId = (await vcg.auctions(1)).tokenIdToSale;
             const assetsAlice = await vcg.assets(alice.address, token, tokenId);
             const assetsBob = await vcg.assets(bob.address, token, tokenId);
             const assetsCharlie = await vcg.assets(charlie.address, token, tokenId);
@@ -202,7 +195,7 @@ describe('test sale', async () => {
             const receipt = await tx.wait();
             // console.log(receipt);
             expect(receipt.events[0].event).to.be.equal('AuctionFinished');
-            active = await vcg.isActive(0);
+            active = await vcg.isActive(1);
             expect(active).to.be.false;
             const sum = price.add(price).add(price);
    

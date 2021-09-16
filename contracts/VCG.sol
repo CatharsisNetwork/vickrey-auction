@@ -11,7 +11,7 @@ import 'hardhat/console.sol';
 contract VCG is AuctionStorage {
 
     mapping(uint256 => mapping(address => bytes)) public bidHashs;       // auction id => user address => bid's hash
-
+    mapping(uint256 => AuctionInfo) public auctions;
     struct AuctionInfo {
         uint256 id;
         uint256 startAuction;
@@ -21,7 +21,7 @@ contract VCG is AuctionStorage {
         bool active;
     }
 
-    AuctionInfo[] public auctions;
+    uint256 public auctionsAmount;
 
     event AuctionStarted(
         uint256 id,
@@ -56,15 +56,12 @@ contract VCG is AuctionStorage {
         newAuction.startAuction = block.timestamp;
         newAuction.tokenIdToSale = _tokenIdToSale;
         newAuction.amountToSale = _amountToSale;
-        uint256 newId = auctions.length;
+        auctionsAmount++;
+        uint256 newId = auctionsAmount;
         newAuction.id = newId;
         newAuction.active = true;
-        auctions.push(newAuction);
+        auctions[newId] = newAuction;
         emit AuctionStarted(newId, newAuction.startAuction, _tokenToSale, _tokenIdToSale, _amountToSale);
-    }
-
-    function getAuctions() external view returns(AuctionInfo[] memory){
-        return auctions;
     }
 
     function isActive(uint256 _auctionId) public view returns(bool){
@@ -72,7 +69,7 @@ contract VCG is AuctionStorage {
     }
 
     function createBid(uint256 _auctionId, bytes memory _hash) external payable{
-        require(auctions.length >= _auctionId + 1, "not exists");
+        require(auctionsAmount >= _auctionId, "not exists");
         require( isActive( _auctionId ), "not active");
         uint256 value = msg.value;
         address sender = _msgSender();
@@ -83,7 +80,7 @@ contract VCG is AuctionStorage {
     }
 
     function claim(uint256 _auctionId, address _token, uint256 _tokenId, uint256 _amount) external {  //TODO nonReentrancy
-        require(auctions.length >= _auctionId + 1, "not exists");
+        require(auctionsAmount >= _auctionId, "not exists");
         require(!isActive( _auctionId ), 'not finished');
         _transferAssets(_msgSender(), _amount, _token, _tokenId);
     }
@@ -93,7 +90,7 @@ contract VCG is AuctionStorage {
     //function claimBatch
 
     function finishAuction(uint256 _auctionId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) external onlyOwner {
-        require(auctions.length >= _auctionId + 1, "not exists");
+        require(auctionsAmount >= _auctionId, "not exists");
         require( isActive( _auctionId ), "already finished");
         require(_winners.length == _prices.length && _amounts.length == _prices.length, 'incorrect data');
         _makeExchange(_auctionId, auctions[_auctionId].tokenToSale, auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
