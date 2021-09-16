@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/VCG.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> VCG.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">91.18% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>31/34</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">60% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>12/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90.91% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>10/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">91.18% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>31/34</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.7;
+&nbsp;
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/token/ERC1155/IERC1155.sol';
+import './AuctionStorage.sol';
+import 'hardhat/console.sol';
+&nbsp;
+// winners get their assets automatically after calling finishAuction()
+// those who didn't get reward, 
+contract VCG is AuctionStorage {
+    
+    AuctionInfo[] auctions;
+&nbsp;
+    struct AuctionInfo {
+        uint256 id;
+        uint256 startAuction;
+        IERC1155 tokenToSale;
+        uint256 tokenIdToSale;
+        uint256 amountToSale;
+        bool active;
+    }
+&nbsp;
+    mapping(uint256 =&gt; mapping(address =&gt; bytes)) bids;                                 // user address =&gt; bid's hash
+&nbsp;
+&nbsp;
+    event AuctionStarted(
+        uint256 id,
+        uint256 start, 
+        address tokenToSale,
+        uint256 tokenIdToSale, 
+        uint256 amountToSale
+    );
+&nbsp;
+    event AuctionFinished(
+        uint256 id,
+        uint256 sold,
+        address[] winners
+    );
+&nbsp;
+    event NewBid(
+        uint256 auctionId,
+        address bidder,
+        bytes hash
+    );
+&nbsp;
+    function initializeAuction(
+        address _tokenToSale,
+        uint256 _tokenIdToSale,
+        uint256 _amountToSale
+    ) external onlyOwner {
+        require(_tokenToSale != address(0), 'token is 0');
+        require(_amountToSale &gt; 0, 'amount is 0');
+        AuctionInfo memory newAuction;
+        newAuction.tokenToSale = IERC1155(_tokenToSale);
+        IERC1155(_tokenToSale).safeTransferFrom(_msgSender(), address(this), _tokenIdToSale, _amountToSale, "");
+        newAuction.startAuction = block.timestamp;
+        newAuction.tokenIdToSale = _tokenIdToSale;
+        newAuction.amountToSale = _amountToSale;
+        uint256 newId = auctions.length;
+        newAuction.id = newId;
+        newAuction.active = true;
+        auctions.push(newAuction);
+        emit AuctionStarted(newId, newAuction.startAuction, _tokenToSale, _tokenIdToSale, _amountToSale);
+    }
+&nbsp;
+    function getStartAuction(uint256 _auctionId) external view returns(uint256){
+        return auctions[_auctionId].startAuction;
+    }
+&nbsp;
+    function getTokenToSale(uint256 _auctionId) external view returns(address){
+        return address(auctions[_auctionId].tokenToSale);
+    }
+&nbsp;
+    function getTokenIdToSale(uint256 _auctionId) external view returns(uint256){
+        return auctions[_auctionId].tokenIdToSale;
+    }
+&nbsp;
+    function getAmountToSale(uint256 _auctionId) external view returns(uint256){
+        return auctions[_auctionId].amountToSale;
+    }
+&nbsp;
+    function getAuctions() external view returns(AuctionInfo[] memory){
+        return auctions;
+    }
+&nbsp;
+    function isActive(uint256 _auctionId) public view returns(bool){
+        return auctions[_auctionId].active;
+    }
+&nbsp;
+    function getBidHash(uint256 _auctionId, address _user) public view returns(bytes memory){
+        return bids[_auctionId][_user];
+    }
+&nbsp;
+    function createBid(uint256 _auctionId, bytes memory _hash) external {
+        require(auctions.length &gt;= _auctionId + 1, "not exists");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require( isActive( _auctionId ), "not active");
+        require(balances[_msgSender()] &gt; 0, "user has zero balance");
+        bids[_auctionId][_msgSender()] = _hash;
+        emit NewBid(_auctionId, _msgSender(), _hash);
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function claim(uint256 _auctionId, address _token, uint256 _tokenId, uint256 _amount) external {  //TODO nonReentrancy</span>
+<span class="cstat-no" title="statement not covered" >        require(auctions.length &gt;= _auctionId + 1, "not exists")</span>;
+<span class="cstat-no" title="statement not covered" >        require(!isActive( _auctionId ), 'not finished')</span>;
+<span class="cstat-no" title="statement not covered" >        _transferAssets(_msgSender(), _amount, _token, _tokenId)</span>;
+    }
+&nbsp;
+    //function claimBatch
+&nbsp;
+    function finishAuction(uint256 _auctionId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) external onlyOwner {
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(auctions.length &gt;= _auctionId + 1, "not exists");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require( isActive( _auctionId ), "already finished");
+        <span class="missing-if-branch" title="else path not taken" >E</span>require(_winners.length == _prices.length &amp;&amp; _amounts.length == _prices.length, 'incorrect data');
+        _makeExchange(address(auctions[_auctionId].tokenToSale), auctions[_auctionId].tokenIdToSale, _winners, _prices, _amounts);
+        auctions[_auctionId].active = false;        
+        emit AuctionFinished(_auctionId, auctions[_auctionId].amountToSale, _winners);
+    }
+&nbsp;
+    //TODO Only operator
+&nbsp;
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Sep 15 2021 20:37:36 GMT+0700 (Novosibirsk Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for contracts/AuctionStorage.sol</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">contracts/</a> AuctionStorage.sol
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">40.91% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>9/22</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.33% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>1/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">50% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>4/8</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">45.45% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>10/22</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.7;
+&nbsp;
+import '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol';
+import '@openzeppelin/contracts/token/ERC1155/IERC1155.sol';
+&nbsp;
+import '@openzeppelin/contracts/access/Ownable.sol';
+&nbsp;
+// Contract to accept, storage and withdraw ETH, and storage and transfer tokens
+&nbsp;
+contract AuctionStorage is Ownable, ERC1155Holder {
+&nbsp;
+    mapping(address =&gt; uint256) balances;                                               // user's deposited amount 
+    mapping(address =&gt; mapping(address =&gt; mapping(uint256 =&gt; uint256 ))) assets;        // user address =&gt; token address =&gt; token id =&gt; amount
+&nbsp;
+    function getAmountOfAsset(address _account, address _tokenAddress, uint256 _tokenId) view external returns(uint256) {
+        return assets[_account][_tokenAddress][_tokenId];
+    }
+&nbsp;
+    function balanceOf(address _account) external view returns(uint256) {
+        return balances[_account];
+    }
+    function deposit() external payable {
+        balances[_msgSender()] += msg.value;
+        // TODO emit event
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function withdraw(uint256 _amount) external {</span>
+<span class="cstat-no" title="statement not covered" >        balances[_msgSender()] -= _amount</span>;
+<span class="cstat-no" title="statement not covered" >        (bool success, ) = _msgSender().call{value: _amount, gas: 4000}("");</span>
+<span class="cstat-no" title="statement not covered" >        require(success, '!withdraw')</span>;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function takeProfit() external onlyOwner {</span>
+<span class="cstat-no" title="statement not covered" >        uint256 ownerBalance = balances[owner()];</span>
+<span class="cstat-no" title="statement not covered" >        require(ownerBalance &gt; 0, 'zero balance')</span>;
+<span class="cstat-no" title="statement not covered" >        (bool success, ) = _msgSender().call{value: ownerBalance}("");</span>
+<span class="cstat-no" title="statement not covered" >        balances[owner()] = 0</span>;
+<span class="cstat-no" title="statement not covered" >        require(success, '!takeProfit')</span>;
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _transferAssets(address recepient, uint256 _amount, address _token, uint256 _tokenId) internal {</span>
+<span class="cstat-no" title="statement not covered" >        require(assets[recepient][_token][_tokenId] &gt;= _amount, 'not enough tokens')</span>;
+<span class="cstat-no" title="statement not covered" >        assets[recepient][_token][_tokenId] -= _amount</span>;
+<span class="cstat-no" title="statement not covered" >        IERC1155(_token).safeTransferFrom(address(this), recepient, _tokenId, _amount, '')</span>;
+    }
+&nbsp;
+    function _makeExchange(address _token, uint256 _tokenId, address[] memory _winners, uint256[] memory _prices, uint256[] memory _amounts) internal {
+        uint256 sumETH; 
+        for (uint256 i = 0; i &lt; _winners.length; i++) {
+            sumETH += _prices[i];
+            balances[_winners[i]] -= _prices[i];
+            assets[_winners[i]][_token][_tokenId] =_amounts[i];
+        }
+        balances[owner()] += sumETH;
+    }
+<span class="fstat-no" title="function not covered" >    fallback() external payable {</span>
+<span class="cstat-no" title="statement not covered" >        if(msg.value &gt; 0) <span class="cstat-no" title="statement not covered" >balances[_msgSender()] += msg.value</span>;</span>
+    }
+&nbsp;
+    receive() external payable {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if(msg.value &gt; 0) balances[_msgSender()] += msg.value;
+    }
+    
+}</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Sep 15 2021 20:37:36 GMT+0700 (Novosibirsk Standard Time)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>
