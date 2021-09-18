@@ -6,8 +6,7 @@ import '@openzeppelin/contracts/token/ERC1155/IERC1155.sol';
 import './AuctionStorage.sol';
 import 'hardhat/console.sol';
 
-// winners get their assets automatically after calling finishAuction()
-// those who didn't get reward, 
+ 
 contract VCG is AuctionStorage {
 
     mapping(uint256 => mapping(address => bytes)) public bidHashs;       // auction id => user address => bid's hash
@@ -71,6 +70,7 @@ contract VCG is AuctionStorage {
         require( auctions[_auctionId].active , "not active");
         uint256 value = msg.value;
         address sender = _msgSender();
+        require(_hash.length != 0, 'zero hash');
         require(bidHashs[_auctionId][sender].length == 0, "bid already made");
         require(sender != owner(), "bidder cannot be owner");
         require(value > 0, "not enough deposit");
