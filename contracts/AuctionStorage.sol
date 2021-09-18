@@ -51,11 +51,10 @@ contract AuctionStorage is Ownable, ERC1155Holder {
         for (uint256 i = 0; i < _winners.length; i++) {
             sumETH += _prices[i];
             deposits[_auctionId][_winners[i]] -= _prices[i];
-            assets[_winners[i]][_token][_tokenId] = _amounts[i];
+            assets[_winners[i]][_token][_tokenId] += _amounts[i];
         }
         profit += sumETH;
     }
 
-    //TODO: if there are a lot of winners?
 
 }
