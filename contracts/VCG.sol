@@ -15,6 +15,7 @@ contract VCG is AuctionStorage {
         address tokenToSale;
         uint256 tokenIdToSale;
         uint256 amountToSale;
+        uint256 minBidValue;
         bool active;
     }
 
@@ -25,7 +26,8 @@ contract VCG is AuctionStorage {
         uint256 start,
         address tokenToSale,
         uint256 tokenIdToSale,
-        uint256 amountToSale
+        uint256 amountToSale,
+        uint256 minBidValue
     );
 
     event AuctionFinished(
@@ -45,7 +47,8 @@ contract VCG is AuctionStorage {
     function initializeAuction(
         address _tokenToSale,
         uint256 _tokenIdToSale,
-        uint256 _amountToSale
+        uint256 _amountToSale,
+        uint256 _minBidValue
     ) external onlyOwner {
         require(_tokenToSale != address(0), "token is 0");
         require(_amountToSale > 0, "amount is 0");
@@ -65,13 +68,15 @@ contract VCG is AuctionStorage {
         uint256 newId = auctionsAmount;
         newAuction.id = newId;
         newAuction.active = true;
+        newAuction.minBidValue = _minBidValue;
         auctions[newId] = newAuction;
         emit AuctionStarted(
             newId,
             newAuction.startAuction,
             _tokenToSale,
             _tokenIdToSale,
-            _amountToSale
+            _amountToSale,
+            _minBidValue
         );
     }
 
@@ -86,7 +91,7 @@ contract VCG is AuctionStorage {
         require(_hash.length != 0, "zero hash");
         require(bidHashs[_auctionId][sender].length == 0, "bid already made");
         require(sender != owner(), "bidder cannot be owner");
-        require(value > 0, "not enough deposit");
+        require(value > auctions[_auctionId].minBidValue, "not enough deposit");
         bidHashs[_auctionId][sender] = _hash;
         _setBidDeposit(_auctionId, sender, value);
         emit NewBid(_auctionId, sender, _hash, value);

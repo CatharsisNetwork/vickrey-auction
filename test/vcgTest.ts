@@ -23,6 +23,7 @@ const AMOUNT_TO_SALE = 1000;
 const SALE_DURATION = 86400 * 14;
 const TOKEN_ID = 1;
 const ITEM_PRICE = ethers.utils.parseEther('1');
+const minValue = ethers.utils.parseEther('0.001');
 
 let AMOUNTS = [1000, 2000, 3000];
 let IDS = [1, 2, 3];
@@ -54,23 +55,23 @@ describe('test sale', async () => {
 
 
    it('shouldnt initialize if token is zero address', async() => {
-      await expect(vcg.initializeAuction(NUL_ADDRESS, IDS[0], AMOUNTS[0])).to.be.revertedWith('token is 0');
+      await expect(vcg.initializeAuction(NUL_ADDRESS, IDS[0], AMOUNTS[0], minValue)).to.be.revertedWith('token is 0');
    })
 
    it('shouldnt initialize if amount is 0', async() => {
-      await expect(vcg.initializeAuction(TOKENS[0], IDS[0], 0)).to.be.revertedWith('amount is 0');
+      await expect(vcg.initializeAuction(TOKENS[0], IDS[0], 0, minValue)).to.be.revertedWith('amount is 0');
 
    })
 
    it('shouldnt initialize if not enough tokens', async() => {
       await mock1.setApprovalForAll(vcg.address, true);
-      await expect(vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0] + 1)).to.be.revertedWith('ERC1155: insufficient balance for transfer');
+      await expect(vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0] + 1, minValue)).to.be.revertedWith('ERC1155: insufficient balance for transfer');
 
    })
 
    it('should correctly initialize', async () => {
       await mock1.setApprovalForAll(vcg.address, true);
-      const tx = await vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0]);
+      const tx = await vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0], minValue);
       const receipt = await tx.wait();
       const timestamp = (await receipt.events[0].getBlock()).timestamp;
       const event = receipt.events[1].event;
@@ -105,7 +106,7 @@ describe('test sale', async () => {
 
       beforeEach('initialize auction', async() => {
          await mock1.setApprovalForAll(vcg.address, true);
-         await vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0]);
+         await vcg.initializeAuction(TOKENS[0], IDS[0], AMOUNTS[0], minValue);
       })
 
 
@@ -367,12 +368,12 @@ describe('test sale', async () => {
          beforeEach('initialize two more auctions', async() => {
             await mock2.setApprovalForAll(vcg.address, true);
             await mock3.setApprovalForAll(vcg.address, true);
-            await vcg.initializeAuction(TOKENS[1], IDS[1], AMOUNTS[1]);
-            await vcg.initializeAuction(TOKENS[2], IDS[2], AMOUNTS[2]/2);
+            await vcg.initializeAuction(TOKENS[1], IDS[1], AMOUNTS[1], minValue);
+            await vcg.initializeAuction(TOKENS[2], IDS[2], AMOUNTS[2]/2, minValue);
          })
 
          it('should create auction with the same asset to sale', async() => {
-            const tx = await vcg.initializeAuction(TOKENS[2], IDS[2], AMOUNTS[2]/2);
+            const tx = await vcg.initializeAuction(TOKENS[2], IDS[2], AMOUNTS[2]/2, minValue);
             const receipt = await tx.wait();
             const timestamp = (await receipt.events[0].getBlock()).timestamp;
             const event = receipt.events[1].event;
