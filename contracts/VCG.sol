@@ -91,7 +91,7 @@ contract VCG is AuctionStorage {
         require(_hash.length != 0, "zero hash");
         require(bidHashs[_auctionId][sender].length == 0, "bid already made");
         require(sender != owner(), "bidder cannot be owner");
-        require(value > auctions[_auctionId].minBidValue, "not enough deposit");
+        require(value >= auctions[_auctionId].minBidValue, "not enough deposit");
         bidHashs[_auctionId][sender] = _hash;
         _setBidDeposit(_auctionId, sender, value);
         emit NewBid(_auctionId, sender, _hash, value);
@@ -120,14 +120,12 @@ contract VCG is AuctionStorage {
     function finishAuction(
         uint256 _auctionId,
         address[] memory _winners,
-        uint256[] memory _prices,
         uint256[] memory _amounts
     ) external onlyOwner {
         require(auctionsAmount >= _auctionId, "not exists");
         require(auctions[_auctionId].active, "already finished");
         require(
-            _winners.length == _prices.length &&
-                _amounts.length == _prices.length,
+            _winners.length == _amounts.length,
             "incorrect data"
         );
         _makeExchange(
@@ -135,7 +133,6 @@ contract VCG is AuctionStorage {
             auctions[_auctionId].tokenToSale,
             auctions[_auctionId].tokenIdToSale,
             _winners,
-            _prices,
             _amounts
         );
         auctions[_auctionId].active = false;

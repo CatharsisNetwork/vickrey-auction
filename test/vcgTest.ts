@@ -19,10 +19,7 @@ const ONE = BigNumber.from('1');
 const TWO = BigNumber.from('2');
 
 const NUL_ADDRESS = '0x0000000000000000000000000000000000000000';
-const AMOUNT_TO_SALE = 1000;
-const SALE_DURATION = 86400 * 14;
 const TOKEN_ID = 1;
-const ITEM_PRICE = ethers.utils.parseEther('1');
 const minValue = ethers.utils.parseEther('0.001');
 
 let AMOUNTS = [1000, 2000, 3000];
@@ -205,7 +202,6 @@ describe('test sale', async () => {
 
          const price = ethers.utils.parseEther('0.005');
 
-         const sum = price.add(price).add(price);
 
 
 
@@ -214,7 +210,7 @@ describe('test sale', async () => {
             await vcg.connect(alice).createBid(1, bidHashAlice, {value: amountAlice});
             await vcg.connect(bob).createBid(1, bidHashBob, {value: amountBob});
             await vcg.connect(charlie).createBid(1, bidHashCharlie, {value: amountCharlie});
-            await vcg.connect(other).createBid(1, bidHashOther, {value: amountCharlie});
+            await vcg.connect(other).createBid(1, bidHashOther, {value: amountOther});
             
          })
 
@@ -231,29 +227,23 @@ describe('test sale', async () => {
          })
 
          it('shouldnt finish auction if it doesnt exist', async() => {
-            const price = ethers.utils.parseEther('0.005');
-            const prices = [price, price, price];
             const winners = [alice.address, bob.address, charlie.address];
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
-            await expect(vcg.finishAuction(5, winners, prices, amounts)).to.be.revertedWith('not exists');  
+            await expect(vcg.finishAuction(5, winners, amounts)).to.be.revertedWith('not exists');  
          })
 
          it('shouldnt finish auction if data is incorrect', async() => {
-            const price = ethers.utils.parseEther('0.005');
-            const prices = [price, price, price];
             const winners = [alice.address, bob.address];
             const amounts = [coinAmountAlice];
-            await expect(vcg.finishAuction(1, winners, prices, amounts)).to.be.revertedWith('incorrect data');  
+            await expect(vcg.finishAuction(1, winners, amounts)).to.be.revertedWith('incorrect data');  
          })
 
          it('should finish auction', async() => {
-            const price = ethers.utils.parseEther('0.005');
-            const prices = [price, price, price];
             const winners = [alice.address, bob.address, charlie.address];
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
             let active = (await vcg.auctions(1)).active;
             expect(active).to.be.true;
-            const tx = await vcg.finishAuction(1, winners, prices, amounts);
+            const tx = await vcg.finishAuction(1, winners, amounts);
             const token = (await vcg.auctions(1)).tokenToSale;
             const tokenId = (await vcg.auctions(1)).tokenIdToSale;
             const assetsAlice = await vcg.assets(alice.address, token, tokenId);
@@ -274,18 +264,15 @@ describe('test sale', async () => {
          describe('after auction', async() => {
 
             beforeEach('finish auction', async() => {
-               const prices = [price, price, price];
                const winners = [alice.address, bob.address, charlie.address];
                const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
-               await vcg.finishAuction(1, winners, prices, amounts);
+               await vcg.finishAuction(1, winners, amounts);
             })
 
             it('shouldnt finish auction if alredy finished', async() => {
-               const price = ethers.utils.parseEther('0.005');
-               const prices = [price, price, price];
                const winners = [alice.address, bob.address];
                const amounts = [coinAmountAlice];
-               await expect(vcg.finishAuction(1, winners, prices, amounts)).to.be.revertedWith('already finished');  
+               await expect(vcg.finishAuction(1, winners, amounts)).to.be.revertedWith('already finished');  
             })
 
             it('shouldnt create bid in non active auction', async() => {
@@ -322,21 +309,20 @@ describe('test sale', async () => {
             })
 
             it('should return deposits', async() => {
-               const aliceBalanceBefore = await alice.getBalance();
-               const tx = await vcg.connect(alice).returnDeposit(1);
+               const otherBalanceBefore = await other.getBalance();
+               const tx = await vcg.connect(other).returnDeposit(1);
                const receipt = await tx.wait();
-               const aliceBalanceAfter = await alice.getBalance();
+               const otherBalanceAfter = await other.getBalance();
                const gasUsed = receipt.gasUsed;
                const gasPrice = tx.gasPrice;
                const gasCost = gasUsed.mul(gasPrice);
-               expect(aliceBalanceAfter.sub(aliceBalanceBefore)).to.be.equal(amountAlice.sub(price).sub(gasCost))
+               expect(otherBalanceAfter.sub(otherBalanceBefore)).to.be.equal(amountOther.sub(gasCost))
 
             })
 
             it('shouldnt return deposits if already returned', async() => {
-               const aliceBalanceBefore = await alice.getBalance();
-               await vcg.connect(alice).returnDeposit(1);
-               await expect(vcg.connect(alice).returnDeposit(1)).to.be.revertedWith('zero deposit');
+               await vcg.connect(other).returnDeposit(1);
+               await expect(vcg.connect(other).returnDeposit(1)).to.be.revertedWith('zero deposit');
 
             })
 
@@ -348,7 +334,7 @@ describe('test sale', async () => {
                const gasUsed = receipt.gasUsed;
                const gasPrice = tx.gasPrice;
                const gasCost = gasUsed.mul(gasPrice);
-               expect(ownerBalanceAfter.sub(ownerBalanceBefore)).to.be.equal(sum.sub(gasCost))
+               expect(ownerBalanceAfter.sub(ownerBalanceBefore)).to.be.equal(amountAlice.add(amountBob).add(amountCharlie).sub(gasCost))
 
             })
 
@@ -363,7 +349,6 @@ describe('test sale', async () => {
       })
 
       describe('several auctions', async() => {
-         const price = ethers.utils.parseEther('0.005');
 
          beforeEach('initialize two more auctions', async() => {
             await mock2.setApprovalForAll(vcg.address, true);
@@ -399,50 +384,7 @@ describe('test sale', async () => {
             expect(contractBalance).to.be.equal(AMOUNTS[2]);
 
          })
-         it('create bids on several auctions, finish one of them, claim coins and return deposit', async() => {
-            let amountAlice = amountToDeposit;
-            let coinAmountAlice = '1000';
-            let bidAlice = ethers.utils.parseEther('0.01');
-            let nonceAlice = ethers.utils.keccak256(ethers.utils.hexlify(Date.now()));
-            let strAlice = coinAmountAlice.concat(nonceAlice.toString()).concat(bidAlice.toString()).concat('2');
-            const bidHashAlice = ethers.utils.keccak256(ethers.utils.hexlify(+strAlice));
-            const tx1 = await vcg.connect(alice).createBid(2, bidHashAlice, {value: amountAlice});
-            const tx2 = await vcg.connect(alice).createBid(3, bidHashAlice, {value: amountAlice});
-            const receipt1 = await tx1.wait();
-            const receipt2 = await tx2.wait();
-            const hash1 = await vcg.bidHashs(2, alice.address);
-            const hash2 = await vcg.bidHashs(3, alice.address);
-            expect(hash1).to.be.equal(bidHashAlice);
-            expect(hash2).to.be.equal(bidHashAlice);
-            expect(receipt1.events[0].event).to.be.equal('NewBid');
-            expect(receipt1.events[0].args.auctionId).to.be.equal(2);
-            expect(receipt1.events[0].args.bidder).to.be.equal(alice.address);
-            expect(receipt1.events[0].args.hash).to.be.equal(bidHashAlice);
-
-            expect(receipt2.events[0].event).to.be.equal('NewBid');
-            expect(receipt2.events[0].args.auctionId).to.be.equal(3);
-            expect(receipt2.events[0].args.bidder).to.be.equal(alice.address);
-            expect(receipt2.events[0].args.hash).to.be.equal(bidHashAlice);
-
-            const prices = [price];
-            const winners = [alice.address];
-            const amounts = [coinAmountAlice];
-            await vcg.finishAuction(2, winners, prices, amounts);
-            const aliceBalanceBefore = await alice.getBalance();
-            const tx = await vcg.connect(alice).returnDeposit(2);
-            const receipt = await tx.wait();
-            const aliceBalanceAfter = await alice.getBalance();
-            const gasUsed = receipt.gasUsed;
-            const gasPrice = tx.gasPrice;
-            const gasCost = gasUsed.mul(gasPrice);
-            expect(aliceBalanceAfter.sub(aliceBalanceBefore)).to.be.equal(amountAlice.sub(price).sub(gasCost));
-
-            const aliceTokensBefore = await mock2.balanceOf(alice.address, IDS[1]);
-            expect(aliceTokensBefore).to.be.equal(0);
-            await vcg.connect(alice).claim(2, mock2.address, IDS[1], coinAmountAlice);
-            const aliceTokensAfter = await mock2.balanceOf(alice.address, IDS[1]);
-            expect(aliceTokensAfter).to.be.equal(coinAmountAlice);
-         })
+         
       })
 
    })
