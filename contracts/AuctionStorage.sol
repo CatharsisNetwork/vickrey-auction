@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-// Contract to accept, storage and withdraw ETH, and storage and transfer tokens
+// Contract to accept, storage and withdraw ETH, storage and transfer tokens
 
 contract AuctionStorage is AccessControl, ERC1155Holder {
     mapping(address => mapping(address => mapping(uint256 => uint256))) public assets; // user address => token address => token id => amount
