@@ -3,17 +3,36 @@ pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // Contract to accept, storage and withdraw ETH, and storage and transfer tokens
 
 contract AuctionStorage is AccessControl, ERC1155Holder {
-    mapping(address => mapping(address => mapping(uint256 => uint256)))
-        public assets; // user address => token address => token id => amount
+    mapping(address => mapping(address => mapping(uint256 => uint256))) public assets; // user address => token address => token id => amount
     mapping(uint256 => mapping(address => uint256)) public deposits; // auction id => user address => bid's hash
 
     uint256 profit; // how much owner can withdraw
+
+    function takeProfit() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint256 balance = profit;
+        require(balance > 0, "zero balance");
+        bool success = _transferETH(payable(_msgSender()), balance);
+        profit = 0;
+        require(success, "!takeProfit");
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControl, ERC1155Receiver)
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC1155Receiver).interfaceId ||
+            interfaceId == type(IAccessControl).interfaceId ||
+            super.supportsInterface(interfaceId);
+    }
 
     function _setBidDeposit(
         uint256 _auctionId,
@@ -37,14 +56,6 @@ contract AuctionStorage is AccessControl, ERC1155Holder {
         require(deposit > 0, "zero deposit");
         deposits[_auctionId][sender] = 0;
         _transferETH(payable(sender), deposit);
-    }
-
-    function takeProfit() external onlyOwner {
-        uint256 balance = profit;
-        require(balance > 0, "zero balance");
-        bool success = _transferETH(payable(_msgSender()), balance);
-        profit = 0;
-        require(success, "!takeProfit");
     }
 
     function _transferAssets(

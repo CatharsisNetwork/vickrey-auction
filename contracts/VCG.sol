@@ -6,8 +6,10 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./AuctionStorage.sol";
 
 contract VCG is AuctionStorage {
+
     mapping(uint256 => mapping(address => bytes)) public bidHashs; // auction id => user address => bid's hash
     mapping(uint256 => AuctionInfo) public auctions;
+    
     struct AuctionInfo {
         uint256 id;
         uint256 startAuction;
@@ -44,12 +46,17 @@ contract VCG is AuctionStorage {
         uint256 deposit
     );
 
+    constructor(address _operator) {
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(OPERATOR_ROLE, _operator);
+    }
+
     function initializeAuction(
         address _tokenToSale,
         uint256 _tokenIdToSale,
         uint256 _amountToSale,
         uint256 _minBidValue
-    ) external onlyOwner {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_tokenToSale != address(0), "token is 0");
         require(_amountToSale > 0, "amount is 0");
         AuctionInfo memory newAuction;
@@ -90,8 +97,12 @@ contract VCG is AuctionStorage {
         address sender = _msgSender();
         require(_hash.length != 0, "zero hash");
         require(bidHashs[_auctionId][sender].length == 0, "bid already made");
-        require(sender != owner(), "bidder cannot be owner");
-        require(value >= auctions[_auctionId].minBidValue, "not enough deposit");
+        require(!hasRole(DEFAULT_ADMIN_ROLE, sender), "bidder cannot be owner");
+        require(!hasRole(OPERATOR_ROLE, sender), "operator cannot be owner");
+        require(
+            value >= auctions[_auctionId].minBidValue,
+            "not enough deposit"
+        );
         bidHashs[_auctionId][sender] = _hash;
         _setBidDeposit(_auctionId, sender, value);
         emit NewBid(_auctionId, sender, _hash, value);
@@ -118,13 +129,10 @@ contract VCG is AuctionStorage {
         uint256 _auctionId,
         address[] memory _winners,
         uint256[] memory _amounts
-    ) external onlyOwner {
+    ) external onlyRole(OPERATOR_ROLE) {
         require(auctionsAmount >= _auctionId, "not exists");
         require(auctions[_auctionId].active, "already finished");
-        require(
-            _winners.length == _amounts.length,
-            "incorrect data"
-        );
+        require(_winners.length == _amounts.length, "incorrect data");
         _makeExchange(
             _auctionId,
             auctions[_auctionId].tokenToSale,
@@ -140,5 +148,4 @@ contract VCG is AuctionStorage {
             block.timestamp
         );
     }
-
 }

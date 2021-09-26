@@ -39,6 +39,7 @@ describe('test sale', async () => {
    const bob = accounts[2];
    const charlie = accounts[3];
    const other = accounts[4];
+   const operator = accounts[5];
 
    beforeEach(async() => {
       const Mock = await ethers.getContractFactory('MockERC1155');
@@ -47,7 +48,7 @@ describe('test sale', async () => {
       mock2 = await Mock.deploy(IDS, AMOUNTS);
       mock3 = await Mock.deploy(IDS, AMOUNTS);
       TOKENS = [mock1.address, mock2.address, mock3.address];
-      vcg = await VCG.deploy();
+      vcg = await VCG.deploy(operator.address);
    })
 
 
@@ -229,13 +230,13 @@ describe('test sale', async () => {
          it('shouldnt finish auction if it doesnt exist', async() => {
             const winners = [alice.address, bob.address, charlie.address];
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
-            await expect(vcg.finishAuction(5, winners, amounts)).to.be.revertedWith('not exists');  
+            await expect(vcg.connect(operator).finishAuction(5, winners, amounts)).to.be.revertedWith('not exists');  
          })
 
          it('shouldnt finish auction if data is incorrect', async() => {
             const winners = [alice.address, bob.address];
             const amounts = [coinAmountAlice];
-            await expect(vcg.finishAuction(1, winners, amounts)).to.be.revertedWith('incorrect data');  
+            await expect(vcg.connect(operator).finishAuction(1, winners, amounts)).to.be.revertedWith('incorrect data');  
          })
 
          it('should finish auction', async() => {
@@ -243,7 +244,7 @@ describe('test sale', async () => {
             const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
             let active = (await vcg.auctions(1)).active;
             expect(active).to.be.true;
-            const tx = await vcg.finishAuction(1, winners, amounts);
+            const tx = await vcg.connect(operator).finishAuction(1, winners, amounts);
             const token = (await vcg.auctions(1)).tokenToSale;
             const tokenId = (await vcg.auctions(1)).tokenIdToSale;
             const assetsAlice = await vcg.assets(alice.address, token, tokenId);
@@ -266,13 +267,13 @@ describe('test sale', async () => {
             beforeEach('finish auction', async() => {
                const winners = [alice.address, bob.address, charlie.address];
                const amounts = [coinAmountAlice, coinAmountBob, coinAmountCharlie];
-               await vcg.finishAuction(1, winners, amounts);
+               await vcg.connect(operator).finishAuction(1, winners, amounts);
             })
 
             it('shouldnt finish auction if alredy finished', async() => {
                const winners = [alice.address, bob.address];
                const amounts = [coinAmountAlice];
-               await expect(vcg.finishAuction(1, winners, amounts)).to.be.revertedWith('already finished');  
+               await expect(vcg.connect(operator).finishAuction(1, winners, amounts)).to.be.revertedWith('already finished');  
             })
 
             it('shouldnt create bid in non active auction', async() => {
