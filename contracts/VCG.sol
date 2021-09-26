@@ -6,9 +6,6 @@ import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./AuctionStorage.sol";
 
 contract VCG is AuctionStorage {
-
-    mapping(uint256 => mapping(address => bytes)) public bidHashs; // auction id => user address => bid's hash
-    mapping(uint256 => AuctionInfo) public auctions;
     
     struct AuctionInfo {
         uint256 id;
@@ -22,6 +19,9 @@ contract VCG is AuctionStorage {
 
     uint256 public auctionsAmount;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    
+    mapping(uint256 => mapping(address => bytes)) public bidHashs; // auction id => user address => bid's hash
+    mapping(uint256 => AuctionInfo) public auctions;
 
     event AuctionStarted(
         uint256 id,
