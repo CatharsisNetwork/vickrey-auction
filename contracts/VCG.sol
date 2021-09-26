@@ -4,7 +4,6 @@ pragma solidity 0.8.7;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./AuctionStorage.sol";
-import "hardhat/console.sol";
 
 contract VCG is AuctionStorage {
     mapping(uint256 => mapping(address => bytes)) public bidHashs; // auction id => user address => bid's hash
@@ -20,6 +19,7 @@ contract VCG is AuctionStorage {
     }
 
     uint256 public auctionsAmount;
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     event AuctionStarted(
         uint256 id,
@@ -103,7 +103,6 @@ contract VCG is AuctionStorage {
         uint256 _tokenId,
         uint256 _amount
     ) external {
-        //TODO nonReentrancy
         require(auctionsAmount >= _auctionId, "not exists");
         require(!auctions[_auctionId].active, "not finished");
         _transferAssets(_msgSender(), _amount, _token, _tokenId);
@@ -114,8 +113,6 @@ contract VCG is AuctionStorage {
         require(!auctions[_auctionId].active, "not finished");
         _returnDeposit(_auctionId);
     }
-
-    //function claimBatch
 
     function finishAuction(
         uint256 _auctionId,
@@ -144,5 +141,4 @@ contract VCG is AuctionStorage {
         );
     }
 
-    //TODO Only operator
 }

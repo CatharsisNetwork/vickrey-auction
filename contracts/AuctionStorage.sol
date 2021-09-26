@@ -4,11 +4,11 @@ pragma solidity 0.8.7;
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // Contract to accept, storage and withdraw ETH, and storage and transfer tokens
 
-contract AuctionStorage is Ownable, ERC1155Holder {
+contract AuctionStorage is AccessControl, ERC1155Holder {
     mapping(address => mapping(address => mapping(uint256 => uint256)))
         public assets; // user address => token address => token id => amount
     mapping(uint256 => mapping(address => uint256)) public deposits; // auction id => user address => bid's hash
